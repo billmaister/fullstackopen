@@ -6,7 +6,13 @@ const App = () => {
 
   const handleNewName = (e) => {
     e.preventDefault();
-    setPersons((prev) => [...prev, { name: newName }]);
+    if (
+      persons.find(({ name }) => name.toLowerCase() === newName.toLowerCase())
+    ) {
+      alert(`${newName} is already added to phonebook`);
+    } else {
+      setPersons((prev) => [...prev, { name: newName }]);
+    }
     setNewName("");
   };
 
