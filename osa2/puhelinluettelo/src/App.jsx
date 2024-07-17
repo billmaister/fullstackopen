@@ -11,13 +11,13 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
-  const [notificationMsg, setNotificationMsg] = useState(null);
+  const [notification, setNotification] = useState(null);
 
-  const showNotification = (time, msg) => {
-    setNotificationMsg(msg);
+  const showNotification = (msg, type) => {
+    setNotification({ msg, type });
     setTimeout(() => {
-      setNotificationMsg(null);
-    }, time);
+      setNotification(null);
+    }, 2000);
   };
 
   useEffect(() => {
@@ -37,11 +37,12 @@ const App = () => {
         `${newName} is already in the phonebook, replace the old number with a new one?`
       )
     ) {
+      const newInfo = {
+        name: newName,
+        number: newNumber,
+      };
       phonebookServices
-        .updateInfo(personInBook.id, {
-          name: newName,
-          number: newNumber,
-        })
+        .updateInfo(personInBook.id, newInfo)
         .then((updatedPerson) => {
           setPersons((prev) =>
             prev.map((person) =>
@@ -49,16 +50,43 @@ const App = () => {
             )
           );
           showNotification(
-            2000,
-            `${updatedPerson.name} was updated successfully`
+            `${updatedPerson.name} was updated successfully`,
+            "success"
           );
+        })
+        .catch((error) => {
+          if (error.response.status === 404) {
+            showNotification(
+              `Error code ${error.response.status}: ${newInfo.name} has already been removed from the server`,
+              "error"
+            );
+            setPersons((prev) =>
+              prev.filter((person) => person.id !== personInBook.id)
+            );
+          } else {
+            showNotification(
+              `Error code ${error.response.status}: Couldn't update ${newInfo.name}`,
+              "error"
+            );
+          }
         });
     } else {
       const newRow = { name: newName, number: newNumber };
-      phonebookServices.addPerson(newRow).then((addedPerson) => {
-        setPersons((prev) => [...prev, addedPerson]);
-        showNotification(2000, `${addedPerson.name} was added to phonebook`);
-      });
+      phonebookServices
+        .addPerson(newRow)
+        .then((addedPerson) => {
+          setPersons((prev) => [...prev, addedPerson]);
+          showNotification(
+            `${addedPerson.name} was added to phonebook`,
+            "success"
+          );
+        })
+        .catch((error) => {
+          showNotification(
+            `Error code ${error.response.status}: Couldn't add ${newRow.name} to phonebook`,
+            "error"
+          );
+        });
     }
     setNewName("");
     setNewNumber("");
@@ -70,15 +98,31 @@ const App = () => {
         `Are you sure that you want to delete ${name} from the phonebook?`
       )
     ) {
-      phonebookServices.deletePerson(id).then((removedPerson) => {
-        setPersons((prev) =>
-          prev.filter((person) => person.id !== removedPerson.id)
-        );
-        showNotification(
-          2000,
-          `${removedPerson.name} was deleted from phonebook successfully`
-        );
-      });
+      phonebookServices
+        .deletePerson(id)
+        .then((removedPerson) => {
+          setPersons((prev) =>
+            prev.filter((person) => person.id !== removedPerson.id)
+          );
+          showNotification(
+            `${removedPerson.name} was deleted from phonebook successfully`,
+            "success"
+          );
+        })
+        .catch((error) => {
+          if (error.response.status === 404) {
+            showNotification(
+              `Error code ${error.response.status}: Couldn't delete, ${name} already removed from the phonebook`,
+              "error"
+            );
+            setPersons((prev) => prev.filter((person) => person.id !== id));
+          } else {
+            showNotification(
+              `Error code ${error.response.status}: Couldn't delete ${name} from the phonebook`,
+              "error"
+            );
+          }
+        });
     }
   };
 
@@ -94,7 +138,7 @@ const App = () => {
         newNumber={newNumber}
         setNewNumber={setNewNumber}
       />
-      <Notification message={notificationMsg} />
+      <Notification notification={notification} />
       <h2>Numbers</h2>
       <Persons persons={persons} filter={filter} handleDelete={handleDelete} />
     </div>
