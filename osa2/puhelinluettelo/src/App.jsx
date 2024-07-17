@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import Form from "./components/Form";
 import Persons from "./components/Persons";
-import axios from "axios";
+import phonebookServices from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState();
@@ -11,9 +11,7 @@ const App = () => {
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then((response) => setPersons(response.data));
+    phonebookServices.getAll().then((persons) => setPersons(persons));
   }, []);
 
   const handleNewName = (e) => {
@@ -24,9 +22,9 @@ const App = () => {
       alert(`${newName} is already added to phonebook`);
     } else {
       const newRow = { name: newName, number: newNumber };
-      axios
-        .post("http://localhost:3001/persons", newRow)
-        .then((response) => setPersons((prev) => [...prev, response.data]));
+      phonebookServices
+        .addPerson(newRow)
+        .then((addedPerson) => setPersons((prev) => [...prev, addedPerson]));
     }
     setNewName("");
     setNewNumber("");
