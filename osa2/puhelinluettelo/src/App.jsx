@@ -16,10 +16,29 @@ const App = () => {
 
   const handleNewName = (e) => {
     e.preventDefault();
-    if (
-      persons.find(({ name }) => name.toLowerCase() === newName.toLowerCase())
+    const personInBook = persons.find(
+      ({ name }) => name.toLowerCase() === newName.toLowerCase()
+    );
+    if (personInBook && personInBook.number === newNumber) {
+      alert(`${newName} is already in the phonebook with number ${newNumber}`);
+    } else if (
+      personInBook &&
+      window.confirm(
+        `${newName} is already in the phonebook, replace the old number with a new one?`
+      )
     ) {
-      alert(`${newName} is already added to phonebook`);
+      phonebookServices
+        .updateInfo(personInBook.id, {
+          name: newName,
+          number: newNumber,
+        })
+        .then((updatedPerson) =>
+          setPersons((prev) =>
+            prev.map((person) =>
+              person.id !== updatedPerson.id ? person : updatedPerson
+            )
+          )
+        );
     } else {
       const newRow = { name: newName, number: newNumber };
       phonebookServices
