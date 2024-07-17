@@ -3,12 +3,22 @@ import Filter from "./components/Filter";
 import Form from "./components/Form";
 import Persons from "./components/Persons";
 import phonebookServices from "./services/persons";
+import "./index.css";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [notificationMsg, setNotificationMsg] = useState(null);
+
+  const showNotification = (time, msg) => {
+    setNotificationMsg(msg);
+    setTimeout(() => {
+      setNotificationMsg(null);
+    }, time);
+  };
 
   useEffect(() => {
     phonebookServices.getAll().then((persons) => setPersons(persons));
@@ -32,18 +42,23 @@ const App = () => {
           name: newName,
           number: newNumber,
         })
-        .then((updatedPerson) =>
+        .then((updatedPerson) => {
           setPersons((prev) =>
             prev.map((person) =>
               person.id !== updatedPerson.id ? person : updatedPerson
             )
-          )
-        );
+          );
+          showNotification(
+            2000,
+            `${updatedPerson.name} was updated successfully`
+          );
+        });
     } else {
       const newRow = { name: newName, number: newNumber };
-      phonebookServices
-        .addPerson(newRow)
-        .then((addedPerson) => setPersons((prev) => [...prev, addedPerson]));
+      phonebookServices.addPerson(newRow).then((addedPerson) => {
+        setPersons((prev) => [...prev, addedPerson]);
+        showNotification(2000, `${addedPerson.name} was added to phonebook`);
+      });
     }
     setNewName("");
     setNewNumber("");
@@ -55,13 +70,15 @@ const App = () => {
         `Are you sure that you want to delete ${name} from the phonebook?`
       )
     ) {
-      phonebookServices
-        .deletePerson(id)
-        .then((removedPerson) =>
-          setPersons((prev) =>
-            prev.filter((person) => person.id !== removedPerson.id)
-          )
+      phonebookServices.deletePerson(id).then((removedPerson) => {
+        setPersons((prev) =>
+          prev.filter((person) => person.id !== removedPerson.id)
         );
+        showNotification(
+          2000,
+          `${removedPerson.name} was deleted from phonebook successfully`
+        );
+      });
     }
   };
 
@@ -77,6 +94,7 @@ const App = () => {
         newNumber={newNumber}
         setNewNumber={setNewNumber}
       />
+      <Notification message={notificationMsg} />
       <h2>Numbers</h2>
       <Persons persons={persons} filter={filter} handleDelete={handleDelete} />
     </div>
