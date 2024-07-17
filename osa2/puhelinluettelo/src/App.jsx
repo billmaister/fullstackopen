@@ -5,7 +5,7 @@ import Persons from "./components/Persons";
 import phonebookServices from "./services/persons";
 
 const App = () => {
-  const [persons, setPersons] = useState();
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
@@ -30,6 +30,22 @@ const App = () => {
     setNewNumber("");
   };
 
+  const handleDelete = (id, name) => {
+    if (
+      window.confirm(
+        `Are you sure that you want to delete ${name} from the phonebook?`
+      )
+    ) {
+      phonebookServices
+        .deletePerson(id)
+        .then((removedPerson) =>
+          setPersons((prev) =>
+            prev.filter((person) => person.id !== removedPerson.id)
+          )
+        );
+    }
+  };
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -43,7 +59,7 @@ const App = () => {
         setNewNumber={setNewNumber}
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} filter={filter} />
+      <Persons persons={persons} filter={filter} handleDelete={handleDelete} />
     </div>
   );
 };

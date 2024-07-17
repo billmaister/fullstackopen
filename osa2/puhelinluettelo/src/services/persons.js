@@ -11,4 +11,9 @@ const addPerson = (newRow) => {
   return request.then((response) => response.data);
 };
 
-export default { getAll, addPerson };
+const deletePerson = (id) => {
+  const request = axios.delete(`${personsURL}/${id}`);
+  return request.then((response) => response.data);
+};
+
+export default { getAll, addPerson, deletePerson };
