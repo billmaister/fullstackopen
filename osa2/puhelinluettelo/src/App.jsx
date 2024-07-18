@@ -101,11 +101,9 @@ const App = () => {
       phonebookServices
         .deletePerson(id)
         .then((removedPerson) => {
-          setPersons((prev) =>
-            prev.filter((person) => person.id !== removedPerson.id)
-          );
+          setPersons((prev) => prev.filter((person) => person.id !== id));
           showNotification(
-            `${removedPerson.name} was deleted from phonebook successfully`,
+            `${name} was deleted from phonebook successfully`,
             "success"
           );
         })
