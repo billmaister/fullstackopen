@@ -29,47 +29,52 @@ const App = () => {
     const personInBook = persons.find(
       ({ name }) => name.toLowerCase() === newName.toLowerCase()
     );
-    if (personInBook && personInBook.number === newNumber) {
-      alert(`${newName} is already in the phonebook with number ${newNumber}`);
-    } else if (
-      personInBook &&
-      window.confirm(
-        `${newName} is already in the phonebook, replace the old number with a new one?`
-      )
-    ) {
-      const newInfo = {
-        name: newName,
-        number: newNumber,
-      };
-      phonebookServices
-        .updateInfo(personInBook.id, newInfo)
-        .then((updatedPerson) => {
-          setPersons((prev) =>
-            prev.map((person) =>
-              person.id !== updatedPerson.id ? person : updatedPerson
-            )
-          );
-          showNotification(
-            `${updatedPerson.name} was updated successfully`,
-            "success"
-          );
-        })
-        .catch((error) => {
-          if (error.response.status === 404) {
-            showNotification(
-              `Error code ${error.response.status}: ${newInfo.name} has already been removed from the server`,
-              "error"
-            );
+    if (personInBook) {
+      if (personInBook.number === newNumber) {
+        alert(
+          `${newName} is already in the phonebook with number ${newNumber}`
+        );
+      } else if (
+        window.confirm(
+          `${newName} is already in the phonebook, replace the old number with a new one?`
+        )
+      ) {
+        const newInfo = {
+          name: newName,
+          number: newNumber,
+        };
+        phonebookServices
+          .updateInfo(personInBook.id, newInfo)
+          .then((updatedPerson) => {
             setPersons((prev) =>
-              prev.filter((person) => person.id !== personInBook.id)
+              prev.map((person) =>
+                person.id !== updatedPerson.id ? person : updatedPerson
+              )
             );
-          } else {
             showNotification(
-              `Error code ${error.response.status}: Couldn't update ${newInfo.name}`,
-              "error"
+              `${updatedPerson.name} was updated successfully`,
+              "success"
             );
-          }
-        });
+          })
+          .catch((error) => {
+            if (error.response.status === 404) {
+              showNotification(
+                `Error code ${error.response.status}: ${newInfo.name} has already been removed from the server`,
+                "error"
+              );
+              setPersons((prev) =>
+                prev.filter((person) => person.id !== personInBook.id)
+              );
+            } else {
+              showNotification(
+                `Error ${error.response.status}: ${error.response.data.error}`,
+                "error"
+              );
+            }
+          });
+      } else {
+        return;
+      }
     } else {
       const newRow = { name: newName, number: newNumber };
       phonebookServices
@@ -83,7 +88,7 @@ const App = () => {
         })
         .catch((error) => {
           showNotification(
-            `Error code ${error.response.status}: Couldn't add ${newRow.name} to phonebook`,
+            `Error ${error.response.status}: ${error.response.data.error}`,
             "error"
           );
         });
