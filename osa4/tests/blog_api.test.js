@@ -109,6 +109,50 @@ describe('When adding a new blog', () => {
   })
 })
 
+describe('deleting a blog', () => {
+  test('using an blog id', async () => {
+    const blogsInDBInitially = await helper.blogsInDb()
+    const firstBlog = blogsInDBInitially[0]
+
+    await api.delete(`/api/blogs/${firstBlog.id}`).expect(204)
+
+    const blogsInDBAfter = await helper.blogsInDb()
+
+    assert.strictEqual(blogsInDBInitially.length - 1, blogsInDBAfter.length)
+
+    const blogTitles = blogsInDBAfter.map((blog) => blog.title)
+
+    assert(!blogTitles.includes(firstBlog.title))
+  })
+})
+
+describe('updating a blog', () => {
+  test('updating likes of the first blog', async () => {
+    const blogsInDBInitially = await helper.blogsInDb()
+    const firstBlogInitially = blogsInDBInitially[0]
+
+    const newBlog = {
+      title: firstBlogInitially.title,
+      author: firstBlogInitially.author,
+      url: firstBlogInitially.url,
+      likes: 42,
+    }
+
+    await api
+      .put(`/api/blogs/${firstBlogInitially.id}`)
+      .send(newBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const blogsInDBAfterUpdate = await helper.blogsInDb()
+    const blogAfterUpdate = blogsInDBAfterUpdate.find(
+      (blog) => blog.id === firstBlogInitially.id
+    )
+
+    assert.strictEqual(blogAfterUpdate.likes, 42)
+  })
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
