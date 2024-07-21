@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 const Blog = ({ blog, user, setBlogs, showNotification }) => {
   const [showAll, setShowAll] = useState(false)
 
-  Blog.PropTypes = {
+  Blog.propTypes = {
     blog: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired,
     setBlogs: PropTypes.func.isRequired,

@@ -7,7 +7,7 @@ const Login = ({ setUser, showNotification }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  Login.PropTypes = {
+  Login.propTypes = {
     setUser: PropTypes.func.isRequired,
     showNotification: PropTypes.func.isRequired,
   }
