@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import blogService from './../services/blogs'
 
-const AddNewBlog = ({ setBlogs, showNotification }) => {
+const AddNewBlog = ({ setBlogs, showNotification, setShowAddBlog }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -14,7 +14,7 @@ const AddNewBlog = ({ setBlogs, showNotification }) => {
         author,
         url,
       })
-      setBlogs((prev) => [...prev, newBlog])
+      setBlogs((prev) => [...prev, newBlog].sort((a, b) => b.likes - a.likes))
       showNotification(
         `A new blog ${title} by ${author} added successfully`,
         'success'
@@ -25,6 +25,7 @@ const AddNewBlog = ({ setBlogs, showNotification }) => {
     setTitle('')
     setAuthor('')
     setUrl('')
+    setShowAddBlog(false)
   }
 
   return (
@@ -58,6 +59,7 @@ const AddNewBlog = ({ setBlogs, showNotification }) => {
             onChange={({ target }) => setUrl(target.value)}
           />
         </div>
+        <button onClick={() => setShowAddBlog(false)}>Cancel</button>
         <button type='submit'>Submit</button>
       </form>
     </div>

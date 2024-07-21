@@ -10,9 +10,12 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState(null)
+  const [showAddBlog, setShowAddBlog] = useState(false)
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
+    blogService
+      .getAll()
+      .then((blogs) => setBlogs(blogs.sort((a, b) => b.likes - a.likes)))
   }, [])
 
   useEffect(() => {
@@ -22,7 +25,12 @@ const App = () => {
       setUser(user)
       blogService.setToken(user.token)
     }
+    setShowAddBlog(false)
   }, [])
+
+  useEffect(() => {
+    setShowAddBlog(false)
+  }, [user])
 
   const showNotification = (msg, type) => {
     setNotification({ msg, type })
@@ -56,11 +64,26 @@ const App = () => {
       <div>
         Logged in as {user.name} <button onClick={handleLogout}>Log out</button>
       </div>
-      <AddNewBlog setBlogs={setBlogs} showNotification={showNotification} />
+      {!showAddBlog && (
+        <button onClick={() => setShowAddBlog(true)}>Add new note</button>
+      )}
+      {showAddBlog && (
+        <AddNewBlog
+          setBlogs={setBlogs}
+          showNotification={showNotification}
+          setShowAddBlog={setShowAddBlog}
+        />
+      )}
       <div>
         <h2>List of blogs</h2>
         {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} />
+          <Blog
+            key={blog.id}
+            blog={blog}
+            user={user}
+            setBlogs={setBlogs}
+            showNotification={showNotification}
+          />
         ))}
       </div>
     </div>

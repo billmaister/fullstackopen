@@ -32,10 +32,21 @@ blogRouter.post('/', async (request, response) => {
   })
 
   const savedBlog = await newBlog.save()
+
+  const blogToResponse = {
+    ...savedBlog._doc,
+    id: savedBlog._doc._id,
+    user: {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+    },
+  }
+
   user.blogs = user.blogs.concat(savedBlog.id)
   await user.save()
 
-  response.status(201).json(savedBlog)
+  response.status(201).json(blogToResponse)
 })
 
 blogRouter.delete('/:id', async (request, response) => {
@@ -71,6 +82,10 @@ blogRouter.put('/:id', async (request, response) => {
     new: true,
     runValidators: true,
     context: 'query',
+  }).populate('user', {
+    username: 1,
+    name: 1,
+    id: 1,
   })
   response.json(updatedBlog)
 })
