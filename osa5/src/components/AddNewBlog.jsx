@@ -40,6 +40,7 @@ const AddNewBlog = ({ setBlogs, showNotification, setShowAddBlog }) => {
             name='title'
             onChange={({ target }) => setTitle(target.value)}
             placeholder='Blog title'
+            id='add-title'
           />
         </div>
         <div>
@@ -50,6 +51,7 @@ const AddNewBlog = ({ setBlogs, showNotification, setShowAddBlog }) => {
             name='author'
             onChange={({ target }) => setAuthor(target.value)}
             placeholder='Blog author'
+            id='add-author'
           />
         </div>
         <div>
@@ -60,6 +62,7 @@ const AddNewBlog = ({ setBlogs, showNotification, setShowAddBlog }) => {
             name='url'
             onChange={({ target }) => setUrl(target.value)}
             placeholder='Blog url'
+            id='add-url'
           />
         </div>
         <button onClick={() => setShowAddBlog(false)}>Cancel</button>

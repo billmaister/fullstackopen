@@ -71,7 +71,7 @@ const Blog = ({ blog, user, setBlogs, showNotification }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className='blog'>
       <div>
         {blog.title} by {blog.author}{' '}
         <button onClick={() => setShowAll((prev) => !prev)}>

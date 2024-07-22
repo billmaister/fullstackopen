@@ -65,7 +65,9 @@ const App = () => {
         Logged in as {user.name} <button onClick={handleLogout}>Log out</button>
       </div>
       {!showAddBlog && (
-        <button onClick={() => setShowAddBlog(true)}>Add new note</button>
+        <button id='add-blog-button' onClick={() => setShowAddBlog(true)}>
+          Add new blog
+        </button>
       )}
       {showAddBlog && (
         <AddNewBlog
@@ -76,15 +78,17 @@ const App = () => {
       )}
       <div>
         <h2>List of blogs</h2>
-        {blogs.map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            user={user}
-            setBlogs={setBlogs}
-            showNotification={showNotification}
-          />
-        ))}
+        <div id='blog-container'>
+          {blogs.map((blog) => (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              user={user}
+              setBlogs={setBlogs}
+              showNotification={showNotification}
+            />
+          ))}
+        </div>
       </div>
     </div>
   )
