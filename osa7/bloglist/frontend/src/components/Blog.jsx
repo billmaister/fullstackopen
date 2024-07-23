@@ -1,57 +1,46 @@
-import { useState } from "react";
-import blogService from "./../services/blogs";
-import PropTypes from "prop-types";
-import { useDispatch, useSelector } from "react-redux";
-import { setNotification } from "../reducers/notificationReducer";
-import { likeBlog, removeBlog } from "../reducers/blogReducer";
+import { useDispatch, useSelector } from 'react-redux';
+import { likeBlog } from '../reducers/blogReducer';
+import { useParams } from 'react-router-dom';
+import Comments from './Comments';
+import { Container, Button, Card } from 'react-bootstrap';
 
-const Blog = ({ blog }) => {
-  const [showAll, setShowAll] = useState(false);
+const Blog = () => {
+  let { id } = useParams();
 
   const dispatch = useDispatch();
-  const user = useSelector(({ user }) => user);
 
-  Blog.propTypes = {
-    blog: PropTypes.object.isRequired,
-  };
+  const blog = useSelector(({ blogs }) => [...blogs].find((b) => b.id === id));
 
   const handleBlogLike = async (event) => {
     event.preventDefault();
     dispatch(likeBlog(blog));
   };
 
-  const handleRemove = async () => {
-    if (
-      window.confirm(
-        `Are you sure you want to remove blog ${blog.title} by ${blog.author}`,
-      )
-    ) {
-      dispatch(removeBlog(blog));
-    }
-    return;
-  };
+  if (!blog) {
+    return null;
+  }
 
   return (
-    <div className="blog blogStyle">
-      <div>
-        {blog.title} by {blog.author}{" "}
-        <button onClick={() => setShowAll((prev) => !prev)}>
-          {showAll ? "hide" : "view"}
-        </button>
-      </div>
-      {showAll && (
-        <div>
-          <p>{blog.url}</p>
-          <div>
-            likes {blog.likes} <button onClick={handleBlogLike}>like</button>
-          </div>
-          <p>{blog.user.name}</p>
-          {blog.user.id === user.id && (
-            <button onClick={handleRemove}>remove</button>
-          )}
-        </div>
-      )}
-    </div>
+    <Container className="mt-5">
+      <Card>
+        <Card.Body>
+          <Card.Title>
+            {blog.title}, {blog.author}
+          </Card.Title>
+          <Card.Link href={blog.url} target="_blank">
+            {blog.url}
+          </Card.Link>
+          <Card.Text>
+            {blog.likes} likes{' '}
+            <Button variant="primary" onClick={handleBlogLike}>
+              Like
+            </Button>
+          </Card.Text>
+          <Card.Text>added by {blog.user.name}</Card.Text>
+        </Card.Body>
+      </Card>
+      <Comments blog={blog} />
+    </Container>
   );
 };
 

@@ -1,16 +1,16 @@
-import { createSlice } from "@reduxjs/toolkit";
-import blogServices from "../services/blogs";
-import loginServices from "../services/login";
-import { setNotification } from "./notificationReducer";
+import { createSlice } from '@reduxjs/toolkit';
+import blogServices from '../services/blogs';
+import loginServices from '../services/login';
+import { setNotification } from './notificationReducer';
 
 const initialState = {
-  name: "",
-  token: "",
-  username: "",
+  name: '',
+  token: '',
+  username: '',
 };
 
 export const userSlice = createSlice({
-  name: "user",
+  name: 'user',
   initialState,
   reducers: {
     setUser: (state, action) => {
@@ -28,7 +28,7 @@ export default userSlice.reducer;
 
 export const initializeUser = () => {
   return async (dispatch) => {
-    const loggedUserJSON = window.localStorage.getItem("loggedBlogUser");
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogUser');
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       dispatch(setUser(user));
@@ -44,20 +44,20 @@ export const login = (username, password) => {
         username,
         password,
       });
-      window.localStorage.setItem("loggedBlogUser", JSON.stringify(user));
+      window.localStorage.setItem('loggedBlogUser', JSON.stringify(user));
       blogServices.setToken(user.token);
       dispatch(setUser(user));
-      dispatch(setNotification("Logged in successfully", "success"));
+      dispatch(setNotification('Logged in successfully', 'success'));
     } catch (exception) {
-      dispatch(setNotification("Invalid username or password", "error"));
+      dispatch(setNotification('Invalid username or password', 'error'));
     }
   };
 };
 
 export const logout = () => {
   return async (dispatch) => {
-    window.localStorage.removeItem("loggedBlogUser");
+    window.localStorage.removeItem('loggedBlogUser');
     dispatch(userLogout());
-    dispatch(setNotification("Logged of successfully", "error"));
+    dispatch(setNotification('Logged of successfully', 'error'));
   };
 };

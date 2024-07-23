@@ -1,12 +1,12 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const initNotification = {
-  msg: "",
-  type: "none",
+  msg: '',
+  type: 'none',
 };
 
 const notificationSlice = createSlice({
-  name: "notification",
+  name: 'notification',
   initialState: initNotification,
   reducers: {
     showNotification(state, action) {
@@ -28,7 +28,7 @@ export const setNotification = (msg, type, time) => {
       () => {
         dispatch(hideNotification());
       },
-      time ? time * 1000 : 2000,
+      time ? time * 1000 : 5000,
     );
   };
 };

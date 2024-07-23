@@ -1,46 +1,51 @@
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { login } from "../reducers/userReducer";
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { login } from '../reducers/userReducer';
+import { useNavigate } from 'react-router-dom';
+import { Form, Button, Container } from 'react-bootstrap';
 
 const Login = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleLogin = async (event) => {
     event.preventDefault();
     dispatch(login(username, password));
+    navigate('/');
   };
 
   return (
-    <div>
-      <form onSubmit={handleLogin}>
-        <div>
-          Username
-          <input
+    <Container className="mt-5">
+      <h2>Login</h2>
+      <Form onSubmit={handleLogin}>
+        <Form.Group className="mb-3" controlId="formUsername">
+          <Form.Label>Username</Form.Label>
+          <Form.Control
             type="text"
             value={username}
-            name="Username"
             onChange={({ target }) => setUsername(target.value)}
-            id="username"
+            placeholder="Enter username"
           />
-        </div>
-        <div>
-          Password
-          <input
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formPassword">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
             type="password"
             value={password}
-            name="Password"
             onChange={({ target }) => setPassword(target.value)}
-            id="password"
+            placeholder="Enter password"
           />
-        </div>
-        <button id="login-button" type="submit">
+        </Form.Group>
+
+        <Button variant="primary" type="submit" id="login-button">
           Login
-        </button>
-      </form>
-    </div>
+        </Button>
+      </Form>
+    </Container>
   );
 };
 

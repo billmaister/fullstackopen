@@ -25,7 +25,11 @@
 .blogStyle {
   padding-top: 10px;
   padding-left: 2px;
-  border: "solid";
+  border: 'solid';
   border-width: 1px;
   margin-bottom: 5px;
+}
+
+.navLink {
+  padding-right: 5px;
 }
